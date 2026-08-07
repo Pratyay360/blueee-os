@@ -1,0 +1,57 @@
+name: bluebuild
+on:
+  schedule:
+    - cron: "0 6 * * *"
+  push:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  bluebuild:
+    name: Build Custom Image
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+    strategy:
+      fail-fast: false
+      matrix:
+        recipe:
+          - recipe.yml
+          - recipe1.yml
+          - recipe2.yml
+          - catchy-recipe.yml
+          - catchy-recipe1.yml
+          - catchy-recipe2.yml
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@main
+
+      - name: Build Custom Image
+        uses: blue-build/github-action@main
+        id: build-image
+        with:
+          recipe: ${{ matrix.recipe }}
+          cosign_private_key: ${{ secrets.COSIGN_PRIVATE_KEY }}
+          registry_token: ${{ github.token }}
+          pr_event_number: ${{ github.event.number || '' }}
+          maximize_build_space: true
+          use_cache: true
+
+      - name: Build Custom Image
+        uses: blue-build/github-action@main
+        id: quay-image
+        with:
+          recipe: ${{ matrix.recipe }}
+          cosign_private_key: ${{ secrets.COSIGN_PRIVATE_KEY }}
+          registry: quay.io
+          registry_username: ${{ secrets.QUAY_USERNAME }}
+          registry_token: ${{ secrets.QUAY_PASSWORD }}
+          pr_event_number: ${{ github.event.number || '' }}
+          maximize_build_space: true
+          use_cache: true

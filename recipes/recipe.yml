@@ -1,0 +1,18 @@
+---
+# yaml-language-server: $schema=https://schema.blue-build.org/recipe-v1.json
+# source: quay.io/pratyay360/kinoite:latest
+name: kinoite
+description: vanilla kinoite
+base-image: quay.io/fedora-ostree-desktops/kinoite
+image-version: rawhide
+
+modules:
+  - from-file: rpmostree.yml
+  - from-file: files.yml
+  - from-file: dnf.yml
+  - from-file: script.yml
+  - from-file: flatpak.yml
+  - from-file: font.yml
+  - from-file: os-release.yml
+
+  - type: signing

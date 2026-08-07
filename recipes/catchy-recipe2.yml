@@ -1,0 +1,19 @@
+---
+# yaml-language-server: $schema=https://schema.blue-build.org/recipe-v1.json
+# source: ghcr.io/pratyay360/catchy-cosmic:latest
+name: catchy-cosmic
+description: catchy kernel + cosmic
+base-image: quay.io/fedora-ostree-desktops/cosmic-atomic
+image-version: rawhide
+
+modules:
+  - from-file: files.yml
+  - from-file: catchy.yml
+  - from-file: rpmostree.yml
+  - from-file: script.yml
+  - from-file: dnf.yml
+  - from-file: flatpak.yml
+  - from-file: font.yml
+  - from-file: os-release.yml
+
+  - type: signing

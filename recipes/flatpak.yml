@@ -1,0 +1,22 @@
+---
+# yaml-language-server: $schema=https://schema.blue-build.org/module-v1.json
+# image will be published to ghcr.io/pratyay360/blue-build
+type: default-flatpaks
+configurations:
+  - notify: false
+    scope: system
+    repo:
+      url: https://dl.flathub.org/repo/flathub.flatpakrepo
+      name: flathub
+      title: Flathub
+    install:
+      - org.gnome.Loupe
+      - app.devsuite.Ptyxis
+      - io.github.kolunmi.Bazaar
+      - com.bitwarden.desktop
+      - com.github.tchx84.Flatseal
+      - io.github.flattool.Warehouse
+      - io.podman_desktop.PodmanDesktop
+      - org.gnome.Epiphany
+      - io.github.sitraorg.sitra
+      - org.gnome.World.PikaBackup

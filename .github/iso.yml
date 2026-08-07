@@ -1,0 +1,80 @@
+# name: Build ISO and Upload
+# on:
+#   workflow_run:
+#     workflows: ["bluebuild"]
+#     types:
+#       - completed
+#   workflow_dispatch:
+
+# concurrency:
+#   group: iso-build-${{ github.ref || github.run_id }}
+#   cancel-in-progress: true
+
+# jobs:
+#   iso:
+#     name: Build ISO
+#     runs-on: ubuntu-latest
+#     if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
+#     permissions:
+#       contents: read
+#       packages: read
+#     strategy:
+#       fail-fast: false
+#       matrix:
+#         recipe:
+#           - recipe.yml
+#           - recipe1.yml
+#           - recipe2.yml
+#           - catchy-recipe.yml
+#           - catchy-recipe1.yml
+#           - catchy-recipe2.yml
+
+#     steps:
+#       - name: Checkout repository
+#         uses: actions/checkout@main
+
+#       - name: Install dependencies
+#         run: |
+#           apt-get update && apt-get install -y \
+#             git cargo gcc openssl-devel \
+#             podman podman-docker \
+#             lorax anaconda \
+#             qemu-kvm qemu-img buildah g++ \
+#             libssl-dev \
+#             qemu-utils \
+#             buildah
+
+#       - name: Install BlueBuild CLI
+#         run: |
+#           cargo install --locked blue-build
+#           /github/home/.cargo/bin/bluebuild --version
+
+#       - name: Extract image name
+#         id: recipe
+#         run: |
+#           NAME="${{ matrix.recipe }}"
+#           echo "name=${NAME%.yml}" >> "$GITHUB_OUTPUT"
+
+#       - name: Generate ISO from published image
+#         id: generate-iso
+#         run: |
+#           NAME="${{ steps.recipe.outputs.name }}"
+#           mkdir -p output
+#           /github/home/.cargo/bin/bluebuild generate-iso \
+#             --iso-name "${NAME}.iso" \
+#             --output-dir ./output \
+#             recipe "${{ matrix.recipe }}"
+#           echo "iso-output-path=output/${NAME}.iso" >> "$GITHUB_OUTPUT"
+
+#       - name: Upload File
+#         id: gofile
+#         uses: ahnafnafee/action-upload-gofile@main
+#         with:
+#             token: ${{ secrets.GOFILE_TOKEN }}
+#             file: ${{ steps.generate-iso.outputs.iso-output-path }}
+
+#       - name: View URL and QR Code
+#         run: |
+#           echo "Recipe:     ${{ matrix.recipe }}"
+#           echo "GoFile URL: ${{ steps.gofile.outputs.url }}"
+#           echo "GoFile QR:  ${{ steps.gofile.outputs.qrcode }}"

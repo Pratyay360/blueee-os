@@ -1,0 +1,7 @@
+[tools]
+"cargo:blue-build" = "latest"
+rust = "latest"
+cosign = "latest"
+ghalint = "latest"
+action-validator = "latest"
+actionlint = "latest"
