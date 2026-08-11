@@ -26,7 +26,7 @@ curl -fsSl https://pkg.cloudflareclient.com/cloudflare-warp-ascii.repo | sudo te
 yum update -y
 yum install -y --skip-unavailable cloudflare-warp
 
-yum install -y nix-core nix-legacy
+# yum install -y nix-core nix-legacy
 
 # curl https://mise.run | sh
 

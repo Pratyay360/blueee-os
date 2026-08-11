@@ -31,5 +31,3 @@ configurations:
       title: orion
     install:
       - com.kagi.Orion
-
-
