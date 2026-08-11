@@ -15,6 +15,5 @@ install:
   packages:
     - wireshark
     - airmon-ng
-    - kvantum
     - ghostty
     - tmux

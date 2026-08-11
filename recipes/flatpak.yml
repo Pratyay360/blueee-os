@@ -9,6 +9,9 @@ configurations:
       url: https://dl.flathub.org/repo/flathub.flatpakrepo
       name: flathub
       title: Flathub
+      url: https://flatpak.orionbrowser.com/orion-beta.flatpakrepo
+      name: orion-beta
+      title: orion
     install:
       - org.gnome.Loupe
       - app.devsuite.Ptyxis
@@ -17,6 +20,10 @@ configurations:
       - com.github.tchx84.Flatseal
       - io.github.flattool.Warehouse
       - io.podman_desktop.PodmanDesktop
-      - org.gnome.Epiphany
+      - com.kagi.Orion
       - io.github.sitraorg.sitra
-      - org.gnome.World.PikaBackup
+      - com.collaboraoffice.Office
+      - com.rustdesk.RustDesk
+      - io.github.nozwock.Packet
+      - it.mijorus.gearlever
+      - org.gnome.DejaDup

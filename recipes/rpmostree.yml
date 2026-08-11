@@ -5,6 +5,7 @@ install:
   - zsh
   - iwd
   - fish
+  - kvantum
 remove:
   - firefox
   - firefox-langpacks

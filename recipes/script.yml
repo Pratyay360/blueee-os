@@ -4,4 +4,4 @@
 type: script
 scripts:
   - script.sh
-  - example.sh
+  # - example.sh
