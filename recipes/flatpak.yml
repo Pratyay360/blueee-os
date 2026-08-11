@@ -6,12 +6,12 @@ configurations:
   - notify: false
     scope: system
     repo:
-      url: https://dl.flathub.org/repo/flathub.flatpakrepo
-      name: flathub
-      title: Flathub
-      url: https://flatpak.orionbrowser.com/orion-beta.flatpakrepo
-      name: orion-beta
-      title: orion
+      - url: https://dl.flathub.org/repo/flathub.flatpakrepo
+        name: flathub
+        title: Flathub
+      - url: https://flatpak.orionbrowser.com/orion-beta.flatpakrepo
+        name: orion-beta
+        title: orion
     install:
       - org.gnome.Loupe
       - app.devsuite.Ptyxis
