@@ -19,3 +19,4 @@ install:
     - tmux
     - openrgb-udev-rules
     - openrgb
+    - kvantum
