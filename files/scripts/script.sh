@@ -17,27 +17,10 @@ curl -fsSL https://soar.qaidvoid.dev/install.sh | sh
 curl -o /tmp/cargo-binstall.tar.gz -fsSL https://github.com/cargo-bins/cargo-binstall/releases/download/v1.20.1/cargo-binstall-x86_64-unknown-linux-gnu.tgz
 tar -xzvf /tmp/cargo-binstall.tar.gz -C "$HOME/.local/bin"
 
-# curl -o /tmp/host-spawn -fsSL https://github.com/1player/host-spawn/releases/download/v1.6.2/host-spawn-x86_64
-# install -D /tmp/host-spawn "$HOME/.local/bin/host-spawn"
+
 
 curl -fsSL https://github.com/Pratyay360/toolbox-export/raw/refs/heads/main/install.sh | sh
 
 curl -fsSl https://pkg.cloudflareclient.com/cloudflare-warp-ascii.repo | sudo tee /etc/yum.repos.d/cloudflare-warp.repo
 yum update -y
 yum install -y --skip-unavailable cloudflare-warp
-
-# yum install -y nix-core nix-legacy
-
-# curl https://mise.run | sh
-
-
-
-
-# unable to find a solution for this
-
-# curl -fsSL -o /tmp/arch-grub.tar.gz \
-#   https://github.com/TomorrowX6/arch-grub/archive/refs/heads/main.tar.gz
-# mkdir -p /tmp/arch-grub /usr/share/grub2/themes/blackice
-# tar -xzf /tmp/arch-grub.tar.gz -C /tmp/arch-grub --strip-components=1
-# cp -r /tmp/arch-grub/blackice/. /usr/share/grub2/themes/blackice/
-# rm -rf /tmp/arch-grub /tmp/arch-grub.tar.gz
