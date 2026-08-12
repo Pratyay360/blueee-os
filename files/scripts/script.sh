@@ -24,3 +24,4 @@ curl -fsSL https://github.com/Pratyay360/toolbox-export/raw/refs/heads/main/inst
 curl -fsSl https://pkg.cloudflareclient.com/cloudflare-warp-ascii.repo | sudo tee /etc/yum.repos.d/cloudflare-warp.repo
 yum update -y
 yum install -y --skip-unavailable cloudflare-warp
+yum install -y --nogpgcheck --repofrompath 'terra,https://repos.fyralabs.com/terra$releasever' terra-release terra-gpg-keys
