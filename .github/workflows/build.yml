@@ -24,9 +24,11 @@ jobs:
           - recipe.yml
           - recipe1.yml
           - recipe2.yml
+          - recipe3.yml
           - catchy-recipe.yml
           - catchy-recipe1.yml
           - catchy-recipe2.yml
+          - catchy-recipe3.yml
 
     steps:
       - name: Checkout repository
