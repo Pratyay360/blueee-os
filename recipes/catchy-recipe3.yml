@@ -3,8 +3,8 @@
 # source: ghcr.io/pratyay360/catchy-cosmic:latest
 name: catchy-cosmic
 description: catchy kernel + cosmic
-base-image: quay.io/fedora-ostree-desktops/sway-atomicssssss
-image-version: rawhide
+base-image: quay.io/fedora-ostree-desktops/sway-atomic
+image-version: 44
 
 modules:
   - from-file: files.yml
