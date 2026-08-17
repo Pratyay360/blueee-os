@@ -20,3 +20,4 @@ install:
     - openrgb-udev-rules
     - openrgb
     - kvantum
+    - containerd
