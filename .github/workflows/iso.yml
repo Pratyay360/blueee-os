@@ -40,10 +40,9 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y \
             git cargo gcc \
-            podman podman-docker \
-            qemu-kvm qemu-img buildah g++ \
+            podman \
+            qemu-system buildah gcc \
             libssl-dev \
-            qemu-utils
 
       - name: Install BlueBuild CLI
         run: |
