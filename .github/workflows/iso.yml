@@ -41,8 +41,8 @@ jobs:
           sudo apt-get install -y \
             git cargo gcc \
             podman \
-            qemu-system buildah gcc \
-            libssl-dev \
+            qemu-system buildah \
+            libssl-dev
 
       - name: Install BlueBuild CLI
         run: |
@@ -53,10 +53,12 @@ jobs:
         run: bluebuild --version
 
       - name: Extract image name
-        id:
+        id: recipe
         run: |
-          NAME="${{ matrix.recipe }}"
-          echo "name=${NAME%.yml}" >> "$GITHUB_OUTPUT"
+          IMAGE="${{ matrix.images }}"
+          BASENAME="${IMAGE##*/}"
+          NAME="${BASENAME%:*}"
+          echo "name=$NAME" >> "$GITHUB_OUTPUT"
 
       - name: Generate ISO from published image
         id: generate-iso
@@ -78,6 +80,6 @@ jobs:
 
       - name: View URL and QR Code
         run: |
-          echo "Recipe:     ${{ matrix.images }}"
+          echo "Image:      ${{ matrix.images }}"
           echo "GoFile URL: ${{ steps.gofile.outputs.url }}"
           echo "GoFile QR:  ${{ steps.gofile.outputs.qrcode }}"
