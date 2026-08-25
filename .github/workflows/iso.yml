@@ -8,7 +8,7 @@ on:
 
 concurrency:
   group: iso-build-${{ github.ref || github.run_id }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   iso:
@@ -16,20 +16,20 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
     permissions:
-      contents: read
-      packages: read
+      contents: write
+      packages: write
     strategy:
       fail-fast: false
       matrix:
-        recipe:
-          - recipe.yml
-          - recipe1.yml
-          - recipe2.yml
-          - recipe3.yml
-          - catchy-recipe.yml
-          - catchy-recipe1.yml
-          - catchy-recipe2.yml
-          - catchy-recipe3.yml
+        images:
+          - quay.io/pratyay360/catchy-kinoite:latest
+          - quay.io/pratyay360/catchy-silverblue:latest
+          - quay.io/pratyay360/catchy-sway:latest
+          - ghcr.io/pratyay360/catchy-cosmic:latest
+          - ghcr.io/pratyay360/sway:latest
+          - quay.io/pratyay360/kinoite:latest
+          - quay.io/pratyay360/silverblue:latest
+          - ghcr.io/pratyay360/cosmic:latest
 
     steps:
       - name: Checkout repository
@@ -53,7 +53,7 @@ jobs:
         run: bluebuild --version
 
       - name: Extract image name
-        id: recipe
+        id:
         run: |
           NAME="${{ matrix.recipe }}"
           echo "name=${NAME%.yml}" >> "$GITHUB_OUTPUT"
@@ -66,18 +66,18 @@ jobs:
           bluebuild generate-iso \
             --iso-name "${NAME}.iso" \
             --output-dir ./output \
-            recipe "${{ matrix.recipe }}"
+            image "${{ matrix.images }}"
           echo "iso-output-path=output/${NAME}.iso" >> "$GITHUB_OUTPUT"
 
       - name: Upload ISO to GoFile
         id: gofile
-        uses: ahnafnafee/action-upload-gofile@main  # TODO: Pin to commit SHA
+        uses: ahnafnafee/action-upload-gofile@main
         with:
           token: ${{ secrets.GOFILE_TOKEN }}
           file: ${{ steps.generate-iso.outputs.iso-output-path }}
 
       - name: View URL and QR Code
         run: |
-          echo "Recipe:     ${{ matrix.recipe }}"
+          echo "Recipe:     ${{ matrix.images }}"
           echo "GoFile URL: ${{ steps.gofile.outputs.url }}"
           echo "GoFile QR:  ${{ steps.gofile.outputs.qrcode }}"
