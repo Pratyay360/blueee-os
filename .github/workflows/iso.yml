@@ -58,6 +58,7 @@ jobs:
           IMAGE="${{ matrix.images }}"
           BASENAME="${IMAGE##*/}"
           NAME="${BASENAME%:*}"
+          VERSION="69"
           echo "name=$NAME" >> "$GITHUB_OUTPUT"
 
       - name: Generate ISO from published image
