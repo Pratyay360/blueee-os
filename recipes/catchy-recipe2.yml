@@ -4,7 +4,7 @@
 name: catchy-cosmic
 description: catchy kernel cosmic
 base-image: quay.io/fedora-ostree-desktops/cosmic-atomic
-image-version: rawhide
+image-version: 44
 
 modules:
   - from-file: catchy.yml

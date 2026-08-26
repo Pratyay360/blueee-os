@@ -4,7 +4,7 @@
 name: cosmic
 description: cosmic
 base-image: quay.io/fedora-ostree-desktops/cosmic-atomic
-image-version: rawhide
+image-version: 44
 
 modules:
   - from-file: rpmostree.yml
