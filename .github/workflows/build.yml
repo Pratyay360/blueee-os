@@ -1,7 +1,7 @@
 name: bluebuild
 on:
   schedule:
-    - cron: "0 6 * * *"
+    - cron: "0 6 */3 * *"
   push:
   workflow_dispatch:
 
@@ -41,7 +41,7 @@ jobs:
           recipe: ${{ matrix.recipe }}
           cosign_private_key: ${{ secrets.COSIGN_PRIVATE_KEY }}
           registry_token: ${{ github.token }}
-          pr_event_number: ${{ github.event.number || '' }}
+          pr_event_number: ${{ github.event.number  }}
           maximize_build_space: true
           use_cache: true
 
@@ -54,6 +54,6 @@ jobs:
           registry: quay.io
           registry_username: ${{ secrets.QUAY_USERNAME }}
           registry_token: ${{ secrets.QUAY_PASSWORD }}
-          pr_event_number: ${{ github.event.number || '' }}
+          pr_event_number: ${{ github.event.number  }}
           maximize_build_space: true
           use_cache: true

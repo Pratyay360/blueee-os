@@ -1,9 +1,11 @@
-to install this
+## to install this
+
 
 ``` bash
 sudo  rpm-ostree rebase ostree-unverified-registry:ghcr.io/pratyay360/catchy-kinoite:latest
 
 ```
+
 # using quay.io
 
 ```bash
@@ -18,6 +20,7 @@ cosign verify --key cosign.pub ghcr.io/pratyay360/catchy-kinoite:latest
 ```
 
 # how to inspect
+
 ```sh
 skopeo inspect docker://ghcr.io/pratyay360/catchy-kinoite:latest
 
@@ -26,7 +29,9 @@ skopeo inspect docker://ghcr.io/pratyay360/catchy-kinoite:latest
 
 
 to generate cosign key pair with skopeo
+
 ```sh
+
 skopeo generate-sigstore-key --output-prefix cosign
 ```
 

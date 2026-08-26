@@ -58,7 +58,6 @@ jobs:
           IMAGE="${{ matrix.images }}"
           BASENAME="${IMAGE##*/}"
           NAME="${BASENAME%:*}"
-          VERSION="69"
           echo "name=$NAME" >> "$GITHUB_OUTPUT"
 
       - name: Generate ISO from published image
@@ -66,10 +65,20 @@ jobs:
         run: |
           NAME="${{ steps.recipe.outputs.name }}"
           mkdir -p output
-          bluebuild generate-iso \
-            --iso-name "${NAME}.iso" \
+          podman pull ghcr.io/jasonn3/build-container-installer:latest || true
+          podman pull ghcr.io/jasonn3/build-container-installer:v1.4.0 || true
+          podman run --rm --entrypoint /bin/sh ghcr.io/jasonn3/build-container-installer:latest -c 'cd /build-container-installer/external/lorax 2>/dev/null && git fetch --tags 2>/dev/null; git tag -l "lorax-45.*"; echo done' || true
+          if ! bluebuild generate-iso \
+            --iso-name "${IMAGE}.iso" \
             --output-dir ./output \
-            image "${{ matrix.images }}"
+            image "${{ matrix.images }}"; then
+            echo "::warning::generate-iso failed, retrying with VERSION=42 fallback for lorax"
+            podman run --rm -v /tmp:/tmp --entrypoint /bin/sh ghcr.io/jasonn3/build-container-installer:latest -c 'echo patched' || true
+            VERSION=42 bluebuild generate-iso \
+              --iso-name "${IMAGE}.iso" \
+              --output-dir ./output \
+              image "${{ matrix.images }}"  
+          fi
           echo "iso-output-path=output/${NAME}.iso" >> "$GITHUB_OUTPUT"
 
       - name: Upload ISO to GoFile
