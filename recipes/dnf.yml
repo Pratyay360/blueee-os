@@ -13,11 +13,8 @@ group-install:
 
 install:
   packages:
-    - wireshark
-    - airmon-ng
     - ghostty
     - tmux
     - openrgb-udev-rules
     - openrgb
     - kvantum
-    - containerd
