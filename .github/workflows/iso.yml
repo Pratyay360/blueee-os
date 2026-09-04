@@ -44,13 +44,13 @@ jobs:
             qemu-system buildah \
             libssl-dev
 
-      - name: Install BlueBuild CLI
-        run: |
-          cargo install --locked blue-build
-          echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
+      - name: Setup mise
+        uses: jdx/mise-action@v2
+        with:
+          version: 2024.10.21
 
       - name: Verify BlueBuild
-        run: bluebuild --version
+        run: mise run verify
 
       - name: Extract image name
         id: recipe
@@ -62,31 +62,28 @@ jobs:
 
       - name: Generate ISO from published image
         id: generate-iso
+        env:
+          IMAGE: ${{ matrix.images }}
+          NAME: ${{ steps.recipe.outputs.name }}
         run: |
-          NAME="${{ steps.recipe.outputs.name }}"
-          mkdir -p output
-          podman pull ghcr.io/jasonn3/build-container-installer:latest || true
-          podman pull ghcr.io/jasonn3/build-container-installer:v1.4.0 || true
-          podman run --rm --entrypoint /bin/sh ghcr.io/jasonn3/build-container-installer:latest -c 'cd /build-container-installer/external/lorax 2>/dev/null && git fetch --tags 2>/dev/null; git tag -l "lorax-45.*"; echo done' || true
-          if ! bluebuild generate-iso \
-            --iso-name "${IMAGE}.iso" \
-            --output-dir ./output \
-            image "${{ matrix.images }}"; then
-            echo "::warning::generate-iso failed, retrying with VERSION=42 fallback for lorax"
-            podman run --rm -v /tmp:/tmp --entrypoint /bin/sh ghcr.io/jasonn3/build-container-installer:latest -c 'echo patched' || true
-            VERSION=42 bluebuild generate-iso \
-              --iso-name "${IMAGE}.iso" \
-              --output-dir ./output \
-              image "${{ matrix.images }}"  
-          fi
+          mise run generate-iso
           echo "iso-output-path=output/${NAME}.iso" >> "$GITHUB_OUTPUT"
+          echo "=== Verify ISO output (workflow) ==="
+          ls -lh "output/${NAME}.iso" || true
+          find output -type f -ls || true
+          if [ ! -f "output/${NAME}.iso" ]; then
+            echo "::error::ISO not found at output/${NAME}.iso after mise task"
+            find . -maxdepth 5 -type f -name "*.iso" -ls 2>/dev/null || true
+            exit 1
+          fi
 
       - name: Upload ISO to GoFile
         id: gofile
-        uses: ahnafnafee/action-upload-gofile@main
-        with:
-          token: ${{ secrets.GOFILE_TOKEN }}
-          file: ${{ steps.generate-iso.outputs.iso-output-path }}
+        env:
+          FILE: ${{ steps.generate-iso.outputs.iso-output-path }}
+          GOFILE_TOKEN: ${{ secrets.GOFILE_TOKEN }}
+          NAME: ${{ steps.recipe.outputs.name }}
+        run: mise run upload
 
       - name: View URL and QR Code
         run: |

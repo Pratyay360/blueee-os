@@ -1,10 +1,102 @@
 [tools]
 "cargo:blue-build" = "latest"
-# rust = "latest"
-# cosign = "latest"
-# ghalint = "latest"
-# action-validator = "latest"
-# actionlint = "latest"
 
+[settings]
+experimental = true
 
-[tasks.build]
+[tasks.verify]
+description = "Verify BlueBuild CLI is installed"
+run = "bluebuild --version"
+
+[tasks."generate-iso"]
+description = "Generate ISO from published image (requires IMAGE and NAME env)"
+run = """
+set -euxo pipefail
+echo "Generating ISO for IMAGE=${IMAGE} NAME=${NAME} PWD=$(pwd)"
+mkdir -p output
+OUTPUT_DIR="$(pwd)/output"
+# Ensure absolute path for podman mount
+podman pull ghcr.io/jasonn3/build-container-installer:latest || true
+podman pull ghcr.io/jasonn3/build-container-installer:v1.4.0 || true
+podman run --rm --entrypoint /bin/sh ghcr.io/jasonn3/build-container-installer:latest -c 'cd /build-container-installer/external/lorax 2>/dev/null && git fetch --tags 2>/dev/null; git tag -l "lorax-45.*"; echo done' || true
+if ! bluebuild generate-iso --iso-name "${NAME}.iso" --output-dir "${OUTPUT_DIR}" image "${IMAGE}"; then
+  echo "::warning::generate-iso failed, retrying with VERSION=42 fallback for lorax"
+  podman run --rm -v /tmp:/tmp --entrypoint /bin/sh ghcr.io/jasonn3/build-container-installer:latest -c 'echo patched' || true
+  VERSION=42 bluebuild generate-iso --iso-name "${NAME}.iso" --output-dir "${OUTPUT_DIR}" image "${IMAGE}"
+fi
+echo "=== Verify ISO output (host) ==="
+ls -lh "${OUTPUT_DIR}/" || true
+ls -R "${OUTPUT_DIR}" || true
+# Fallback: if expected file missing but another .iso exists, use it
+if [ ! -f "${OUTPUT_DIR}/${NAME}.iso" ]; then
+  echo "::warning::Expected ${OUTPUT_DIR}/${NAME}.iso not found, searching..."
+  find "${OUTPUT_DIR}" build -type f -name "*.iso" -ls 2>/dev/null || true
+  CANDIDATE=$(find "${OUTPUT_DIR}" build . -maxdepth 4 -type f -name "*.iso" 2>/dev/null | head -n 1 || true)
+  if [ -n "${CANDIDATE}" ]; then
+    echo "Found candidate $CANDIDATE -> copying to ${OUTPUT_DIR}/${NAME}.iso"
+    cp -v "${CANDIDATE}" "${OUTPUT_DIR}/${NAME}.iso"
+  fi
+fi
+if [ ! -f "${OUTPUT_DIR}/${NAME}.iso" ]; then
+  echo "::error::ISO not found at ${OUTPUT_DIR}/${NAME}.iso"
+  find . -maxdepth 5 -type f -name "*.iso" -ls 2>/dev/null || true
+  exit 1
+fi
+ls -lh "${OUTPUT_DIR}/${NAME}.iso"
+"""
+
+[tasks.upload]
+description = "Upload ISO to GoFile via curl (requires FILE and GOFILE_TOKEN)"
+run = """
+set -euo pipefail
+FILE="${FILE:-output/${NAME}.iso}"
+if [ -n "${GOFILE_TOKEN:-}" ]; then
+  TOKEN="${GOFILE_TOKEN}"
+else
+  TOKEN="${TOKEN:-}"
+fi
+if [ ! -f "$FILE" ]; then
+  echo "::error::File not found at $FILE"
+  echo "Searching for any .iso..."
+  find . -maxdepth 5 -type f -name "*.iso" -ls 2>/dev/null || true
+  ls -R output 2>/dev/null || true
+  CANDIDATE=$(find output build . -maxdepth 5 -type f -name "*.iso" 2>/dev/null | head -n 1 || true)
+  if [ -n "${CANDIDATE:-}" ]; then
+    echo "Using candidate $CANDIDATE"
+    FILE="$CANDIDATE"
+  else
+    exit 1
+  fi
+fi
+echo "Uploading $FILE ($(du -h "$FILE" | cut -f1)) to GoFile..."
+ls -lh "$FILE"
+# Try authenticated upload if token present
+if [ -n "${TOKEN:-}" ]; then
+  RESPONSE=$(curl -s --fail-with-body -X POST -F "file=@$FILE" -F "token=$TOKEN" https://upload.gofile.io/uploadFile 2>&1 || curl -s -X POST -F "file=@$FILE" -H "Authorization: Bearer $TOKEN" https://upload.gofile.io/uploadFile 2>&1 || true)
+else
+  RESPONSE=$(curl -s --fail-with-body -X POST -F "file=@$FILE" https://upload.gofile.io/uploadFile 2>&1 || true)
+fi
+echo "GoFile response: $RESPONSE"
+URL=$(echo "$RESPONSE" | jq -r '.data.downloadPage // .data.directLink // empty' 2>/dev/null || echo "")
+if [ -z "$URL" ] || [ "$URL" = "null" ]; then
+  # Fallback parse
+  URL=$(echo "$RESPONSE" | grep -o '"downloadPage"[^,]*' | head -n1 || true)
+fi
+echo "url=$URL"
+if [ -n "$URL" ] && [ "$URL" != "null" ]; then
+  echo "GoFile URL: $URL"
+  # Generate QR via api.qrserver.com pattern used by original action
+  QR="https://api.qrserver.com/v1/create-qr-code/?size=256x256&data=$URL"
+  echo "qrcode=$QR"
+  # Export for GHA if running there
+  if [ -n "${GITHUB_OUTPUT:-}" ]; then
+    echo "url=$URL" >> "$GITHUB_OUTPUT"
+    echo "qrcode=$QR" >> "$GITHUB_OUTPUT"
+  fi
+else
+  echo "::warning::Could not parse GoFile URL, check response above"
+  if [ -n "${GITHUB_OUTPUT:-}" ]; then
+    echo "url=" >> "$GITHUB_OUTPUT"
+  fi
+fi
+"""
