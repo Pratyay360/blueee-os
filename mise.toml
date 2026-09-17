@@ -11,7 +11,6 @@ run = "bluebuild --version"
 [tasks."generate-iso"]
 description = "Generate ISO from published image (requires IMAGE and NAME env)"
 run = """
-set -euxo pipefail
 echo "Generating ISO for IMAGE=${IMAGE} NAME=${NAME} PWD=$(pwd)"
 mkdir -p output
 OUTPUT_DIR="$(pwd)/output"
@@ -48,7 +47,6 @@ ls -lh "${OUTPUT_DIR}/${NAME}.iso"
 [tasks.upload]
 description = "Upload ISO to GoFile via curl (requires FILE and GOFILE_TOKEN)"
 run = """
-set -euo pipefail
 FILE="${FILE:-output/${NAME}.iso}"
 if [ -n "${GOFILE_TOKEN:-}" ]; then
   TOKEN="${GOFILE_TOKEN}"
