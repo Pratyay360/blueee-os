@@ -79,7 +79,15 @@ jobs:
 
       - name: Upload ISO to GoFile
         id: gofile
-        uses: ./.github/workflows/upload-iso.yml
-        with:
-          file: ${{ steps.generate-iso.outputs.iso-output-path }}
-          name: ${{ steps.recipe.outputs.name }}
+        env:
+          FILE: ${{ steps.generate-iso.outputs.iso-output-path }}
+          GOFILE_TOKEN: ${{ secrets.GOFILE_TOKEN }}
+          NAME: ${{ steps.recipe.outputs.name }}
+        run: mise run upload
+
+      - name: View URL and QR Code
+        if: ${{ always() }}
+        run: |
+          echo "File:       ${{ steps.generate-iso.outputs.iso-output-path }}"
+          echo "GoFile URL: ${{ steps.gofile.outputs.url }}"
+          echo "GoFile QR:  ${{ steps.gofile.outputs.qrcode }}"
