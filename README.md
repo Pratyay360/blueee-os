@@ -1,3 +1,19 @@
+# Blueee OS
+
+Custom Fedora Atomic desktop images with CachyOS BORE Kernel and standard Fedora kernels. Built with [BlueBuild](https://blue-build.org).
+
+## 💿 ISO Downloads & Live Web Portal
+
+All bootable ISOs are automatically uploaded to GoFile with embedded QR codes for mobile scanning and instant direct downloads:
+
+👉 **[Blueee OS ISO Downloads Portal](https://pratyay360.github.io/blueee-os/)**
+
+### Local Static Site Tasks
+- **Build static site**: `mise run build-site`
+- **Preview static site**: `mise run preview-site` (serves at `http://localhost:8080`)
+
+---
+
 ## to install this
 
 

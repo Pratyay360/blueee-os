@@ -83,7 +83,6 @@ fi
 echo "url=$URL"
 if [ -n "$URL" ] && [ "$URL" != "null" ]; then
   echo "GoFile URL: $URL"
-  # Generate QR via api.qrserver.com pattern used by original action
   QR="https://api.qrserver.com/v1/create-qr-code/?size=256x256&data=$URL"
   echo "qrcode=$QR"
   # Export for GHA if running there
@@ -91,6 +90,22 @@ if [ -n "$URL" ] && [ "$URL" != "null" ]; then
     echo "url=$URL" >> "$GITHUB_OUTPUT"
     echo "qrcode=$QR" >> "$GITHUB_OUTPUT"
   fi
+  # Save metadata for static site generator
+  mkdir -p site-data
+  SIZE=$(du -h "$FILE" 2>/dev/null | cut -f1 || echo "")
+  SHA256=$(sha256sum "$FILE" 2>/dev/null | cut -d' ' -f1 || echo "")
+  cat <<EOF > "site-data/${NAME}.json"
+{
+  "name": "${NAME}",
+  "image": "${IMAGE:-}",
+  "filename": "$(basename "$FILE")",
+  "size": "$SIZE",
+  "sha256": "$SHA256",
+  "url": "$URL",
+  "qrcode": "$QR",
+  "updated_at": "$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+}
+EOF
 else
   echo "::warning::Could not parse GoFile URL, check response above"
   if [ -n "${GITHUB_OUTPUT:-}" ]; then
@@ -98,3 +113,11 @@ else
   fi
 fi
 """
+
+[tasks.build-site]
+description = "Generate static site with GoFile links and embedded QR codes"
+run = "python3 scripts/generate_site.py"
+
+[tasks.preview-site]
+description = "Preview static site locally on http://localhost:8080"
+run = "python3 scripts/generate_site.py && python3 -m http.server 8080 -d _site"
