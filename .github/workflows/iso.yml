@@ -25,11 +25,11 @@ jobs:
           - quay.io/pratyay360/catchy-kinoite:latest
           - quay.io/pratyay360/catchy-silverblue:latest
           - quay.io/pratyay360/catchy-sway:latest
-          - ghcr.io/pratyay360/catchy-cosmic:latest
-          - ghcr.io/pratyay360/sway:latest
+          - quay.io/pratyay360/catchy-cosmic:latest
+          - quay.io/pratyay360/sway:latest
           - quay.io/pratyay360/kinoite:latest
           - quay.io/pratyay360/silverblue:latest
-          - ghcr.io/pratyay360/cosmic:latest
+          - quay.io/pratyay360/cosmic:latest
 
     steps:
       - name: Checkout repository
@@ -45,9 +45,9 @@ jobs:
             libssl-dev
 
       - name: Setup mise
-        uses: jdx/mise-action@v2
+        uses: jdx/mise-action@v4
         with:
-          version: 2024.10.21
+          version: 2026.3.10
 
       - name: Verify BlueBuild
         run: mise run verify
@@ -79,14 +79,7 @@ jobs:
 
       - name: Upload ISO to GoFile
         id: gofile
-        env:
-          FILE: ${{ steps.generate-iso.outputs.iso-output-path }}
-          GOFILE_TOKEN: ${{ secrets.GOFILE_TOKEN }}
-          NAME: ${{ steps.recipe.outputs.name }}
-        run: mise run upload
-
-      - name: View URL and QR Code
-        run: |
-          echo "Image:      ${{ matrix.images }}"
-          echo "GoFile URL: ${{ steps.gofile.outputs.url }}"
-          echo "GoFile QR:  ${{ steps.gofile.outputs.qrcode }}"
+        uses: ./.github/workflows/upload-iso.yml
+        with:
+          file: ${{ steps.generate-iso.outputs.iso-output-path }}
+          name: ${{ steps.recipe.outputs.name }}

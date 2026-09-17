@@ -1,0 +1,100 @@
+name: Upload ISO to GoFile
+
+on:
+  workflow_call:
+    inputs:
+      file:
+        description: "Path to the ISO file to upload (relative to caller workspace)"
+        required: true
+        type: string
+      name:
+        description: "Logical name of the ISO (used as fallback FILE path and in logs)"
+        required: false
+        type: string
+        default: ""
+      gofile_token:
+        description: "GoFile account token (optional). Falls back to unauthenticated upload if empty."
+        required: false
+        type: string
+        default: ""
+    secrets:
+      GOFILE_TOKEN:
+        description: "GoFile account token from the caller repo's secrets"
+        required: false
+    outputs:
+      url:
+        description: "GoFile downloadPage URL of the uploaded ISO"
+        value: ${{ jobs.upload.outputs.url }}
+      qrcode:
+        description: "QR code URL pointing at the GoFile downloadPage"
+        value: ${{ jobs.upload.outputs.qrcode }}
+
+  workflow_dispatch:
+    inputs:
+      file:
+        description: "Path to the ISO file to upload (relative to repo root)"
+        required: true
+        type: string
+      name:
+        description: "Logical name (used as fallback FILE path)"
+        required: false
+        type: string
+        default: ""
+      gofile_token:
+        description: "GoFile account token (optional)"
+        required: false
+        type: string
+        default: ""
+
+concurrency:
+  group: iso-upload-${{ github.ref || github.run_id }}
+  cancel-in-progress: false
+
+jobs:
+  upload:
+    name: Upload ISO to GoFile
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      url: ${{ steps.gofile.outputs.url }}
+      qrcode: ${{ steps.gofile.outputs.qrcode }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@main
+
+      - name: Resolve file path
+        id: resolve
+        run: |
+          FILE="${{ inputs.file }}"
+          NAME="${{ inputs.name }}"
+          if [ ! -f "$FILE" ]; then
+            echo "::error::File not found at $FILE"
+            echo "Searching for any .iso under output/ or build/..."
+            find . -maxdepth 5 -type f -name "*.iso" -ls 2>/dev/null || true
+            CANDIDATE=$(find output build . -maxdepth 5 -type f -name "*.iso" 2>/dev/null | head -n 1 || true)
+            if [ -n "${CANDIDATE:-}" ]; then
+              echo "Using candidate $CANDIDATE"
+              FILE="$CANDIDATE"
+            else
+              exit 1
+            fi
+          fi
+          echo "file=$FILE" >> "$GITHUB_OUTPUT"
+          echo "Resolved upload target: $FILE ($(du -h "$FILE" | cut -f1))"
+
+      - name: Upload to GoFile
+        id: gofile
+        env:
+          FILE: ${{ steps.resolve.outputs.file }}
+          TOKEN: ${{ secrets.GOFILE_TOKEN }}
+          NAME: ${{ inputs.name }}
+          GITHUB_OUTPUT: ${{ env.GITHUB_OUTPUT }}
+        run: mise run upload
+
+      - name: View URL and QR Code
+        if: ${{ always() }}
+        run: |
+          echo "File:      ${{ steps.resolve.outputs.file }}"
+          echo "GoFile URL: ${{ steps.gofile.outputs.url }}"
+          echo "GoFile QR:  ${{ steps.gofile.outputs.qrcode }}"
