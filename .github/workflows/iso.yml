@@ -22,14 +22,14 @@ jobs:
       fail-fast: false
       matrix:
         images:
-          - quay.io/pratyay360/catchy-kinoite:latest
-          - quay.io/pratyay360/catchy-silverblue:latest
-          - quay.io/pratyay360/catchy-sway:latest
-          - quay.io/pratyay360/catchy-cosmic:latest
-          - quay.io/pratyay360/sway:latest
-          - quay.io/pratyay360/kinoite:latest
-          - quay.io/pratyay360/silverblue:latest
-          - quay.io/pratyay360/cosmic:latest
+          - ghcr.io/pratyay360/catchy-kinoite:latest
+          - ghcr.io/pratyay360/catchy-silverblue:latest
+          - ghcr.io/pratyay360/catchy-sway:44
+          - ghcr.io/pratyay360/catchy-cosmic:latest
+          - ghcr.io/pratyay360/sway:44
+          - ghcr.io/pratyay360/kinoite:latest
+          - ghcr.io/pratyay360/silverblue:latest
+          - ghcr.io/pratyay360/cosmic:latest
 
     steps:
       - name: Checkout repository
