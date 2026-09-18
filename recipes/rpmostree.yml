@@ -5,6 +5,7 @@ install:
   - tmux
   - iwd
   - fish
+  - openrgb-udev-rules
 remove:
   - firefox
   - firefox-langpacks

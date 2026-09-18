@@ -15,6 +15,5 @@ install:
   packages:
     - ghostty
     - tmux
-    - openrgb-udev-rules
     - openrgb
     - kvantum

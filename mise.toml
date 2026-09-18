@@ -1,4 +1,5 @@
 [tools]
+biome = "latest"
 "cargo:blue-build" = "latest"
 
 [settings]
