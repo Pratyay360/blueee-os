@@ -1,0 +1,200 @@
+name: Build ISO and Upload
+
+on:
+  workflow_run:
+    workflows: ["bluebuild"]
+    types:
+      - completed
+  workflow_dispatch:
+
+concurrency:
+  group: iso-build-${{ github.ref || github.run_id }}
+  cancel-in-progress: false
+
+jobs:
+  iso:
+    name: Build ISO
+    runs-on: ubuntu-latest
+    if: github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch'
+    permissions:
+      contents: write
+      packages: write
+    strategy:
+      fail-fast: false
+      matrix:
+        images:
+          - quay.io/pratyay360/catchy-kinoite:latest
+          - quay.io/pratyay360/catchy-silverblue:latest
+          - quay.io/pratyay360/catchy-sway:44
+          - quay.io/pratyay360/catchy-cosmic:latest
+          - quay.io/pratyay360/sway:44
+          - quay.io/pratyay360/kinoite:latest
+          - quay.io/pratyay360/silverblue:latest
+          - quay.io/pratyay360/cosmic:latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@main
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            git cargo gcc \
+            podman \
+            qemu-system buildah \
+            libssl-dev
+
+      - name: Setup mise
+        uses: jdx/mise-action@main
+        with:
+          version: 2026.3.10
+
+      - name: Verify BlueBuild
+        run: mise run verify
+
+      - name: Extract image name
+        id: recipe
+        run: |
+          IMAGE="${{ matrix.images }}"
+          BASENAME="${IMAGE##*/}"
+          NAME="${BASENAME%:*}"
+          echo "name=$NAME" >> "$GITHUB_OUTPUT"
+
+      - name: Generate ISO from published image
+        id: generate-iso
+        env:
+          IMAGE: ${{ matrix.images }}
+          NAME: ${{ steps.recipe.outputs.name }}
+        run: |
+          mise run generate-iso
+          echo "iso-output-path=output/${NAME}.iso" >> "$GITHUB_OUTPUT"
+          echo "=== Verify ISO output (workflow) ==="
+          ls -lh "output/${NAME}.iso" || true
+          find output -type f -ls || true
+          if [ ! -f "output/${NAME}.iso" ]; then
+            echo "::error::ISO not found at output/${NAME}.iso after mise task"
+            find . -maxdepth 5 -type f -name "*.iso" -ls 2>/dev/null || true
+            exit 1
+          fi
+
+      - name: Upload ISO to GoFile
+        id: gofile
+        env:
+          FILE: ${{ steps.generate-iso.outputs.iso-output-path }}
+          GOFILE_TOKEN: ${{ secrets.GOFILE_TOKEN }}
+          NAME: ${{ steps.recipe.outputs.name }}
+        run: mise run upload
+
+      - name: View URL and QR Code
+        if: always()
+        run: |
+          echo "File:       ${{ steps.generate-iso.outputs.iso-output-path }}"
+          echo "GoFile URL: ${{ steps.gofile.outputs.url }}"
+          echo "GoFile QR:  ${{ steps.gofile.outputs.qrcode }}"
+
+      - name: Save ISO metadata
+        if: steps.gofile.outputs.url != ''
+        run: |
+          mkdir -p site-data
+          ISO_FILE="${{ steps.generate-iso.outputs.iso-output-path }}"
+          SIZE=""
+          SHA256=""
+          if [ -f "$ISO_FILE" ]; then
+            SIZE=$(du -h "$ISO_FILE" | cut -f1)
+            SHA256=$(sha256sum "$ISO_FILE" | cut -d' ' -f1)
+          fi
+          cat <<EOF > "site-data/${{ steps.recipe.outputs.name }}.json"
+          {
+            "name": "${{ steps.recipe.outputs.name }}",
+            "image": "${{ matrix.images }}",
+            "filename": "${{ steps.recipe.outputs.name }}.iso",
+            "size": "$SIZE",
+            "sha256": "$SHA256",
+            "url": "${{ steps.gofile.outputs.url }}",
+            "qrcode": "${{ steps.gofile.outputs.qrcode }}",
+            "updated_at": "$(date -u +'%Y-%m-%dT%H:%M:%SZ')",
+            "run_id": "${{ github.run_id }}",
+            "commit_sha": "${{ github.sha }}"
+          }
+          EOF
+
+      - name: Upload ISO metadata artifact
+        if: steps.gofile.outputs.url != ''
+        uses: actions/upload-artifact@main
+        with:
+          name: iso-meta-${{ steps.recipe.outputs.name }}
+          path: site-data/${{ steps.recipe.outputs.name }}.json
+          retention-days: 2
+
+      - name: Add job step summary
+        if: steps.gofile.outputs.url != ''
+        run: |
+          echo "### 🚀 ISO Ready: ${{ steps.recipe.outputs.name }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Image:** \`${{ matrix.images }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Download:** [GoFile Download Link](${{ steps.gofile.outputs.url }})" >> $GITHUB_STEP_SUMMARY
+          echo "- **QR Code:**" >> $GITHUB_STEP_SUMMARY
+          echo "<img src=\"${{ steps.gofile.outputs.qrcode }}\" width=\"160\" height=\"160\" alt=\"QR Code for ${{ steps.recipe.outputs.name }}\" />" >> $GITHUB_STEP_SUMMARY
+
+  publish-site:
+    name: Generate and Deploy Static Site
+    needs: [iso]
+    if: always()
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@main
+
+      - name: Download all ISO metadata artifacts
+        uses: actions/download-artifact@main
+        with:
+          pattern: iso-meta-*
+          path: site-data
+          merge-multiple: true
+        continue-on-error: true
+
+      - name: Generate static site
+        run: |
+          python3 scripts/generate_site.py --data-dir site-data --output-dir _site
+
+      - name: Upload static site artifact
+        uses: actions/upload-artifact@main
+        with:
+          name: static-site
+          path: _site
+          retention-days: 30
+
+      - name: Setup Pages
+        uses: actions/configure-pages@main
+        continue-on-error: true
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@main
+        with:
+          path: _site
+        continue-on-error: true
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@main
+        continue-on-error: true
+
+      - name: Deploy to gh-pages branch
+        uses: peaceiris/actions-gh-pages@main
+        with:
+          github_token: ${{ github.token }}
+          publish_dir: ./_site
+          keep_files: false
+        continue-on-error: true
+
+      - name: Post Global Run Summary
+        if: always()
+        run: |
+          if [ -f "_site/summary.md" ]; then
+            cat _site/summary.md >> $GITHUB_STEP_SUMMARY
+          fi

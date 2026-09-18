@@ -1,0 +1,19 @@
+---
+# yaml-language-server: $schema=https://schema.blue-build.org/module-v1.json
+type: dnf
+repos:
+  copr:
+    - scottames/ghostty
+
+group-install:
+  with-optional: true
+  packages:
+    - development-tools
+    - virtualization
+
+install:
+  packages:
+    - ghostty
+    - tmux
+    - openrgb
+    - kvantum

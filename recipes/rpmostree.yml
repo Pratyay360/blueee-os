@@ -1,0 +1,11 @@
+---
+# yaml-language-server: $schema=https://schema.blue-build.org/module-v1.json
+type: rpm-ostree
+install:
+  - tmux
+  - iwd
+  - fish
+  - openrgb-udev-rules
+remove:
+  - firefox
+  - firefox-langpacks

@@ -1,0 +1,10 @@
+---
+# yaml-language-server: $schema=https://schema.blue-build.org/module-v1.json
+type: os-release
+properties:
+  ID: stardust_os
+  NAME: stardust_os
+  PRETTY_NAME: stardust os
+  DEFAULT_HOSTNAME: stardust
+  HOME_URL: https://github.com/pratyay360/blueee-os
+  SUPPORT_URL: https://github.com/pratyay360/blueee-os/issues
