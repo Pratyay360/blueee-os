@@ -5,15 +5,7 @@ repos:
   copr:
     - scottames/ghostty
 
-group-install:
-  with-optional: true
-  packages:
-    - development-tools
-    - virtualization
-
 install:
   packages:
     - ghostty
     - tmux
-    - openrgb
-    - kvantum

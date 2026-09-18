@@ -1,11 +1,18 @@
 ---
 # yaml-language-server: $schema=https://schema.blue-build.org/module-v1.json
 type: rpm-ostree
+group-install:
+  with-optional: true
+  packages:
+    - development-tools
+    - virtualization
+
 install:
   - tmux
   - iwd
   - fish
-  - openrgb-udev-rules
+  - openrgb
+  - kvantum
 remove:
   - firefox
   - firefox-langpacks

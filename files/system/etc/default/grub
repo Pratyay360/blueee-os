@@ -3,10 +3,6 @@ GRUB_DISTRIBUTOR="$(sed 's, release .*$,,g' /etc/system-release)"
 GRUB_DEFAULT="saved"
 GRUB_DISABLE_SUBMENU="true"
 GRUB_TERMINAL_OUTPUT="gfxterm"
-# Blueee OS theme. GRUB can only load themes from /boot, which rpm-ostree
-# does not manage, so run /usr/share/blueee/enable-grub-theme.sh once as
-# root to copy the shipped theme into /boot/grub2/themes and regenerate
-# grub.cfg. Until then this line is inert (stock fallback console).
 GRUB_THEME="/boot/grub2/themes/blueee/theme.txt"
 GRUB_GFXMODE="1920x1080,auto"
 GRUB_GFXPAYLOAD_LINUX="keep"
