@@ -1129,7 +1129,6 @@ def generate_html(data: dict) -> str:
       <div class="hero-badge">Fedora Atomic images, rebuilt regularly</div>
       <h1 class="hero-title">Get {project_name}</h1>
       <p class="hero-subtitle">{project_description}</p>
-      <p class="hero-note">If you're not sure which one to pick: KDE if you want familiar, GNOME if you want simple. {ready_images} of {total_images} ISOs are ready right now — the rest can still be installed with one rebase command.</p>
 
       <div class="hero-actions">
         <a href="#downloads" class="btn btn-primary">
@@ -1166,56 +1165,18 @@ def generate_html(data: dict) -> str:
       <div class="filter-pills">
         <span class="filter-label">Kernel:</span>
         <button class="filter-btn active" data-category="all">Any kernel</button>
-        <button class="filter-btn" data-category="cachy">CachyOS (faster)</button>
-        <button class="filter-btn" data-category="standard">Fedora stock</button>
+        <button class="filter-btn" data-category="cachy">CachyOS </button>
+        <button class="filter-btn" data-category="standard">vanilla Fedora</button>
       </div>
     </div>
 
     <div class="iso-grid" id="isoGrid">
       {cards_joined}
     </div>
-
-    <section class="guide-section">
-      <h2 class="guide-title">How this usually goes</h2>
-      <p class="guide-intro">Nothing fancy here. Grab a file, flash it, or skip the USB entirely if you're already on Atomic.</p>
-      <div class="guide-grid">
-        <div class="guide-card">
-          <div class="guide-step-num">Step 1</div>
-          <h4>Grab the ISO</h4>
-          <p>Download it here, or scan the QR code to open the same link on your phone.</p>
-        </div>
-        <div class="guide-card">
-          <div class="guide-step-num">Step 2</div>
-          <h4>Put it on a USB stick</h4>
-          <p>Rufus (in DD mode), Fedora Media Writer, or balenaEtcher all work fine.</p>
-          <code>sudo dd if=image.iso of=/dev/sdX bs=4M status=progress</code>
-        </div>
-        <div class="guide-card">
-          <div class="guide-step-num">Step 3 — optional</div>
-          <h4>Or just rebase</h4>
-          <p>Already on Silverblue, Kinoite, or another Atomic desktop? Copy the rebase command from the card you want. No reinstall needed.</p>
-          <code>sudo rpm-ostree rebase ostree-unverified-registry:...</code>
-        </div>
-        <div class="guide-card">
-          <div class="guide-step-num">If you're careful</div>
-          <h4>Check the signature</h4>
-          <p>Every image is signed. Most people skip this, but it's there if you want it.</p>
-          <code>cosign verify --key cosign.pub ghcr.io/...</code>
-        </div>
-      </div>
-    </section>
-
-    <div class="maintainer-note">
-      <strong>A quick note:</strong> I build and test these images myself. CachyOS kernel builds feel snappier for games and heavy multitasking, stock Fedora builds are the calmer default. Either way, you can switch later — it's Atomic, that's the point.
-    </div>
   </main>
 
   <footer>
     <div class="container footer-content">
-      <div>
-        <p><strong>Blueee OS</strong> — put together with BlueBuild. I use these builds day to day.</p>
-        <p>Last updated: {now_str} • Something off? Open an issue on GitHub.</p>
-      </div>
       <div class="footer-links">
         <a href="downloads.json" target="_blank">downloads.json</a>
         <a href="{repository}" target="_blank">GitHub</a>
