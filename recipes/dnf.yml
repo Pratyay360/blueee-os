@@ -8,4 +8,9 @@ repos:
 install:
   packages:
     - ghostty
-    - tmux
+
+group-install:
+  with-optional: true
+  packages:
+    - development-tools
+    - virtualization
