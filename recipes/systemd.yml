@@ -1,0 +1,7 @@
+type: systemd
+
+system:
+  disabled:
+    - wpa_supplicant.service
+  enabled:
+    - iwd.service

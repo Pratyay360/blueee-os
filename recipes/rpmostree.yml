@@ -8,6 +8,7 @@ install:
   - fish
   - openrgb-udev-rules
   - kvantum
+  - mesa*
 remove:
   - firefox
   - firefox-langpacks

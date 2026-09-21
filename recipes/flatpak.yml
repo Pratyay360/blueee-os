@@ -18,7 +18,6 @@ configurations:
       - io.github.flattool.Warehouse
       - io.podman_desktop.PodmanDesktop
       - io.github.sitraorg.sitra
-      - com.collaboraoffice.Office
       - com.rustdesk.RustDesk
       - io.github.nozwock.Packet
       - it.mijorus.gearlever
@@ -29,5 +28,5 @@ configurations:
       url: https://flatpak.orionbrowser.com/orion-beta.flatpakrepo
       name: orion-beta
       title: orion
-    install:
-      - com.kagi.Orion
+    # install:
+      # - com.kagi.Orion

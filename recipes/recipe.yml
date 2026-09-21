@@ -4,7 +4,7 @@
 name: kinoite
 description: kinoite
 base-image: quay.io/fedora-ostree-desktops/kinoite
-image-version: 44
+image-version: 4
 
 modules:
   - from-file: rpmostree.yml
@@ -14,5 +14,6 @@ modules:
   - from-file: flatpak.yml
   - from-file: font.yml
   - from-file: os-release.yml
+  - from-file: systemd.yml
 
   - type: signing
