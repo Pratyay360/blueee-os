@@ -4,13 +4,12 @@ type: dnf
 repos:
   copr:
     - scottames/ghostty
-
 install:
   packages:
     - ghostty
-    - starship
     - git-lfs
     - sudo-rs
+
 group-install:
   with-optional: true
   packages:

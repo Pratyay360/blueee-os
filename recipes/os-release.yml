@@ -2,9 +2,9 @@
 # yaml-language-server: $schema=https://schema.blue-build.org/module-v1.json
 type: os-release
 properties:
-  ID: stardust
-  NAME: Kitty OS
-  PRETTY_NAME: KItty ps ps ps
-  DEFAULT_HOSTNAME: fedora
+  VARIANT_ID: stardust
+  NAME: Blueee OS
+  PRETTY_NAME: Blueee OS
+  DEFAULT_HOSTNAME: blueee
   HOME_URL: https://github.com/pratyay360/blueee-os
   SUPPORT_URL: https://github.com/pratyay360/blueee-os/issues

@@ -22,11 +22,14 @@ configurations:
       - io.github.nozwock.Packet
       - it.mijorus.gearlever
       - org.gnome.DejaDup
-  - notify: false
-    scope: system
-    repo:
-      url: https://flatpak.orionbrowser.com/orion-beta.flatpakrepo
-      name: orion-beta
-      title: orion
-    # install:
-      # - com.kagi.Orion
+  # To enable the Orion beta remote, uncomment the block below AND add at
+  # least one app under `install:`. An entry with only `repo:` and no
+  # `install:`/`remove:` is invalid, so it stays commented out.
+  # - notify: false
+  #   scope: system
+  #   repo:
+  #     url: https://flatpak.orionbrowser.com/orion-beta.flatpakrepo
+  #     name: orion-beta
+  #     title: orion
+  #   install:
+  #     - com.kagi.Orion

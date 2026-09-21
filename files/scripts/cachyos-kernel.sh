@@ -22,8 +22,13 @@ done
 cd -
 
 echo ">>> Enabling bieszczaders/kernel-cachyos COPR"
-curl -fsSL -o /etc/yum.repos.d/kernel-cachyos.repo \
-  "https://copr.fedorainfracloud.org/coprs/bieszczaders/kernel-cachyos/repo/fedora-rawhide/bieszczaders-kernel-cachyos-fedora-rawhide.repo"
+RELEASEVER="$(rpm -E %fedora 2>/dev/null || echo 44)"
+COPR_REPO="https://copr.fedorainfracloud.org/coprs/bieszczaders/kernel-cachyos/repo/fedora-${RELEASEVER}/bieszczaders-kernel-cachyos-fedora-${RELEASEVER}.repo"
+if ! curl -fsSL -o /etc/yum.repos.d/kernel-cachyos.repo "${COPR_REPO}"; then
+  echo "No COPR repo for fedora-${RELEASEVER}, falling back to fedora-44" >&2
+  curl -fsSL -o /etc/yum.repos.d/kernel-cachyos.repo \
+    "https://copr.fedorainfracloud.org/coprs/bieszczaders/kernel-cachyos/repo/fedora-44/bieszczaders-kernel-cachyos-fedora-44.repo"
+fi
 
 echo ">>> Removing stock kernel packages"
 STOCK_KERNELS=""
