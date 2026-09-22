@@ -7,3 +7,4 @@ system:
     - wpa_supplicant.service
   enabled:
     - iwd.service
+    - libvirtd.service
