@@ -8,8 +8,6 @@ install:
   - fish
   - openrgb-udev-rules
   - kvantum
-  - mesa-vulkan-drivers
-  - mesa-va-drivers
 remove:
   - firefox
   - firefox-langpacks
