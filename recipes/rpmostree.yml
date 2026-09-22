@@ -11,4 +11,3 @@ install:
 remove:
   - firefox
   - firefox-langpacks
-  - gambas3
