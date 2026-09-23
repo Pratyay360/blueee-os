@@ -13,5 +13,4 @@ install:
 group-install:
   with-optional: true
   packages:
-    - development-tools
     - virtualization

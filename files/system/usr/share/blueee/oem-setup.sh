@@ -16,16 +16,6 @@ if [[ -x /usr/share/blueee/enable-grub-theme.sh ]]; then
   /usr/share/blueee/enable-grub-theme.sh || true
 fi
 
-# --- Default Flatpaks ---
-echo "[2/4] Installing default Flatpak applications..."
-flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo 2>/dev/null || true
-flatpak install -y --noninteractive flathub \
-  org.mozilla.firefox \
-  org.libreoffice.LibreOffice \
-  com.discordapp.Discord \
-  com.spotify.Client \
-  org.gimp.GIMP \
-  2>/dev/null || true
 
 # --- System Tweaks ---
 echo "[3/4] Applying system tweaks..."
