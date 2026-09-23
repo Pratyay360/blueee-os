@@ -1,9 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Shell(chmod:*)"
-    ],
-    "deny": [],
-    "defaultMode": "default"
-  }
-}
