@@ -1,0 +1,9 @@
+{
+  "name": "Blueee OS",
+  "logo": "/usr/share/anaconda/ui/logo.svg",
+  "css": "/usr/share/anaconda/ui/blueee.css",
+  "website": "https://github.com/pratyay360/blueee-os",
+  "bugzilla": "https://github.com/pratyay360/blueee-os/issues",
+  "creator": "Blueee OS Team",
+  "product_release": "Blueee OS"
+}

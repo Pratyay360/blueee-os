@@ -1,0 +1,15 @@
+[Unit]
+Description=Blueee OS OEM Setup
+After=network-online.target
+Wants=network-online.target
+ConditionPathExists=!/var/lib/blueee-oem-setup-done
+
+[Service]
+Type=oneshot
+ExecStart=/usr/share/blueee/oem-setup.sh
+ExecStartPost=/usr/bin/touch /var/lib/blueee-oem-setup-done
+RemainAfterExit=yes
+TimeoutStartSec=300
+
+[Install]
+WantedBy=multi-user.target

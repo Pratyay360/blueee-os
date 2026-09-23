@@ -25,9 +25,16 @@ terminal-font: "Unifont Regular 16"
     color = "#e8eaed"
   }
 
+  + label {
+    text = " "
+    align = "center"
+    font = "Unifont Regular 16"
+    color = "#e8eaed"
+  }
+
   + boot_menu {
     width = 100%
-    height = 65%
+    height = 60%
     item_font = "Unifont Regular 16"
     item_color = "#9aa3ad"
     selected_item_color = "#ffffff"

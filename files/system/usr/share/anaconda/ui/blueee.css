@@ -1,0 +1,106 @@
+/* Blueee OS Anaconda Branding */
+/* Custom CSS for Anaconda installer */
+
+/* Root and base */
+body {
+  font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background-color: #0e1116;
+  color: #e8eaed;
+}
+
+/* Header / top bar */
+.topbar {
+  background-color: #0e1116;
+  border-bottom: 1px solid #2b3138;
+}
+
+.topbar .app-logo {
+  display: none;
+}
+
+/* Navigation buttons */
+.btn-secondary {
+  background-color: #232a31;
+  border-color: #2b3138;
+  color: #e8eaed;
+}
+
+.btn-secondary:hover {
+  background-color: #2b3138;
+  border-color: #4da3d8;
+}
+
+/* Primary action button */
+.btn-primary {
+  background-color: #4da3d8;
+  border-color: #4da3d8;
+  color: #0e1116;
+}
+
+.btn-primary:hover {
+  background-color: #5bb3e6;
+  border-color: #5bb3e6;
+}
+
+/* Spoke rows */
+table.tile-table .tile {
+  background-color: #161b22;
+  border-color: #2b3138;
+}
+
+table.tile-table .tile:hover {
+  background-color: #1c2333;
+  border-color: #4da3d8;
+}
+
+/* Installation progress */
+progress {
+  accent-color: #4da3d8;
+}
+
+/* Sidebar */
+.sidebar {
+  background-color: #161b22;
+  border-right: 1px solid #2b3138;
+}
+
+.sidebar .nav-item.active {
+  background-color: #1c2333;
+  border-left: 3px solid #4da3d8;
+}
+
+/* Dialogs and modals */
+.modal-content {
+  background-color: #161b22;
+  border-color: #2b3138;
+}
+
+/* Text inputs */
+.form-control {
+  background-color: #161b22;
+  border-color: #2b3138;
+  color: #e8eaed;
+}
+
+.form-control:focus {
+  border-color: #4da3d8;
+  box-shadow: 0 0 0 2px rgba(77, 163, 216, 0.25);
+}
+
+/* Welcome screen branding */
+.welcome-branding {
+  text-align: center;
+  padding: 2rem;
+}
+
+.welcome-branding h1 {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #4da3d8;
+  margin-bottom: 0.5rem;
+}
+
+.welcome-branding p {
+  color: #9aa3ad;
+  font-size: 1rem;
+}

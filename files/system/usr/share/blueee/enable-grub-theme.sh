@@ -7,6 +7,9 @@
 # into place and regenerates grub.cfg. Safe to re-run.
 #
 # Usage: sudo /usr/share/blueee/enable-grub-theme.sh
+#
+# OEM install mode:
+#   Uses alternate paths if they exist (for OEM ISO installs).
 set -euo pipefail
 
 if [[ "${EUID}" -ne 0 ]]; then
@@ -25,11 +28,26 @@ fi
 mkdir -p "${DST}"
 cp -f "${SRC}/theme.txt" "${SRC}/background.png" "${DST}/"
 
-if grep -q '^GRUB_THEME=' /etc/default/grub; then
-  sed -i 's|^GRUB_THEME=.*|GRUB_THEME="/boot/grub2/themes/blueee/theme.txt"|' /etc/default/grub
-else
-  echo 'GRUB_THEME="/boot/grub2/themes/blueee/theme.txt"' >> /etc/default/grub
+# Update GRUB config to point to the theme
+GRUB_CFG="/etc/default/grub"
+if [[ -f "${GRUB_CFG}" ]]; then
+  if grep -q '^GRUB_THEME=' "${GRUB_CFG}"; then
+    sed -i 's|^GRUB_THEME=.*|GRUB_THEME="/boot/grub2/themes/blueee/theme.txt"|' "${GRUB_CFG}"
+  else
+    echo 'GRUB_THEME="/boot/grub2/themes/blueee/theme.txt"' >> "${GRUB_CFG}"
+  fi
+
+  # Ensure OEM-friendly GRUB settings
+  if grep -q '^GRUB_TIMEOUT=' "${GRUB_CFG}"; then
+    sed -i 's|^GRUB_TIMEOUT=.*|GRUB_TIMEOUT="10"|' "${GRUB_CFG}"
+  fi
 fi
 
-grub2-mkconfig -o /boot/grub2/grub.cfg
+# Regenerate grub.cfg
+if command -v grub2-mkconfig &>/dev/null; then
+  grub2-mkconfig -o /boot/grub2/grub.cfg
+elif command -v grub-mkconfig &>/dev/null; then
+  grub-mkconfig -o /boot/grub/grub.cfg
+fi
+
 echo "Blueee GRUB theme installed. Reboot to see it."
