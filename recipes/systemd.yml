@@ -3,8 +3,8 @@
 type: systemd
 
 system:
-  disabled:
-    - wpa_supplicant.service
+  # disabled:
+    # - wpa_supplicant.service
   enabled:
-    - iwd.service
+    # - iwd.service
     - libvirtd.service

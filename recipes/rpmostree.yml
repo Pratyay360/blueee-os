@@ -4,7 +4,7 @@ type: rpm-ostree
 
 install:
   - tmux
-  - iwd
+  # - iwd
   - fish
   - openrgb-udev-rules
   - kvantum
