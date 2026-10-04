@@ -2,9 +2,9 @@
 # yaml-language-server: $schema=https://schema.blue-build.org/recipe-v1.json
 # source: quay.io/pratyay360/kinoite:latest
 name: kinoite
-description: Blueee OS Kinoite - Fedora KDE Plasma Atomic with curated packages, Flatpaks, and tweaks.
+description: Blueee OS - Kinoite
 base-image: quay.io/fedora-ostree-desktops/kinoite
-image-version: 44
+image-version: 45
 
 modules:
   - from-file: rpmostree.yml
