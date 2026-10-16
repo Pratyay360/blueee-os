@@ -1,0 +1,8 @@
+
+.bluebuild-scripts_*
+/.bluebuild-scripts_*
+.commandcode/taste/
+_site/
+site-data/
+output/
+build/
