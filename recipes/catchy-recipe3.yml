@@ -4,7 +4,7 @@
 name: catchy-sway
 description: Blueee OS Sway with CachyOS kernel - Fedora Sway Atomic tuned for low latency and gaming.
 base-image: quay.io/fedora-ostree-desktops/sway-atomic
-image-version: 44
+image-version: 45
 
 modules:
   - from-file: rpmostree.yml
