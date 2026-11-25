@@ -10,7 +10,6 @@
 
 set -euo pipefail
 
-echo ">>> Stubbing rpm-ostree + dracut kernel-install hooks"
 cd /usr/lib/kernel/install.d
 for hook in 05-rpmostree.install 50-dracut.install; do
   if [ -f "${hook}" ]; then

@@ -8,7 +8,7 @@ OWNER="pratyay360"
 #         gh api --method DELETE "users/$OWNER/packages/$TYPE/$PACKAGE"
 #     # fi
 # done
-PACKAGE_NAMES=$(gh api "/users/pratyay360/packages?package_type=container" --paginate --jq '.[].name')
+PACKAGE_NAMES=$(gh api '/users/pratyay360/packages?package_type=container' --paginate --jq '.[] | select(.repository.name == "blueee-os") | .name')
 for PACKAGE in $PACKAGE_NAMES; do
     echo "Deleting package: $PACKAGE"
 
